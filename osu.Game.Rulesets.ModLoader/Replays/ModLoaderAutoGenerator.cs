@@ -2,27 +2,27 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using osu.Game.Beatmaps;
-using osu.Game.Rulesets.EmptyFreeform.Objects;
+using osu.Game.Rulesets.ModLoader.Objects;
 using osu.Game.Rulesets.Replays;
 
-namespace osu.Game.Rulesets.EmptyFreeform.Replays
+namespace osu.Game.Rulesets.ModLoader.Replays
 {
-    public class EmptyFreeformAutoGenerator : AutoGenerator<EmptyFreeformReplayFrame>
+    public class ModLoaderAutoGenerator : AutoGenerator<ModLoaderReplayFrame>
     {
-        public new Beatmap<EmptyFreeformHitObject> Beatmap => (Beatmap<EmptyFreeformHitObject>)base.Beatmap;
+        public new Beatmap<ModLoaderHitObject> Beatmap => (Beatmap<ModLoaderHitObject>)base.Beatmap;
 
-        public EmptyFreeformAutoGenerator(IBeatmap beatmap)
+        public ModLoaderAutoGenerator(IBeatmap beatmap)
             : base(beatmap)
         {
         }
 
         protected override void GenerateFrames()
         {
-            Frames.Add(new EmptyFreeformReplayFrame());
+            Frames.Add(new ModLoaderReplayFrame());
 
-            foreach (EmptyFreeformHitObject hitObject in Beatmap.HitObjects)
+            foreach (ModLoaderHitObject hitObject in Beatmap.HitObjects)
             {
-                Frames.Add(new EmptyFreeformReplayFrame
+                Frames.Add(new ModLoaderReplayFrame
                 {
                     Time = hitObject.StartTime,
                     Position = hitObject.Position,

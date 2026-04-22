@@ -8,16 +8,16 @@ using osu.Framework.Utils;
 using osu.Game.Replays;
 using osu.Game.Rulesets.Replays;
 
-namespace osu.Game.Rulesets.EmptyFreeform.Replays
+namespace osu.Game.Rulesets.ModLoader.Replays
 {
-    public class EmptyFreeformFramedReplayInputHandler : FramedReplayInputHandler<EmptyFreeformReplayFrame>
+    public class ModLoaderFramedReplayInputHandler : FramedReplayInputHandler<ModLoaderReplayFrame>
     {
-        public EmptyFreeformFramedReplayInputHandler(Replay replay)
+        public ModLoaderFramedReplayInputHandler(Replay replay)
             : base(replay)
         {
         }
 
-        protected override bool IsImportant(EmptyFreeformReplayFrame frame) => frame.Actions.Any();
+        protected override bool IsImportant(ModLoaderReplayFrame frame) => frame.Actions.Any();
 
         protected override void CollectReplayInputs(List<IInput> inputs)
         {
@@ -27,9 +27,9 @@ namespace osu.Game.Rulesets.EmptyFreeform.Replays
             {
                 Position = GamefieldToScreenSpace(position),
             });
-            inputs.Add(new ReplayState<EmptyFreeformAction>
+            inputs.Add(new ReplayState<ModLoaderAction>
             {
-                PressedActions = CurrentFrame?.Actions ?? new List<EmptyFreeformAction>(),
+                PressedActions = CurrentFrame?.Actions ?? new List<ModLoaderAction>(),
             });
         }
     }

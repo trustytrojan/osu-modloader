@@ -4,16 +4,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using osu.Game.Beatmaps;
-using osu.Game.Rulesets.EmptyFreeform.Objects;
+using osu.Game.Rulesets.ModLoader.Objects;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Types;
 using osuTK;
 
-namespace osu.Game.Rulesets.EmptyFreeform.Beatmaps
+namespace osu.Game.Rulesets.ModLoader.Beatmaps
 {
-    public class EmptyFreeformBeatmapConverter : BeatmapConverter<EmptyFreeformHitObject>
+    public class ModLoaderBeatmapConverter : BeatmapConverter<ModLoaderHitObject>
     {
-        public EmptyFreeformBeatmapConverter(IBeatmap beatmap, Ruleset ruleset)
+        public ModLoaderBeatmapConverter(IBeatmap beatmap, Ruleset ruleset)
             : base(beatmap, ruleset)
         {
         }
@@ -22,9 +22,9 @@ namespace osu.Game.Rulesets.EmptyFreeform.Beatmaps
         // https://github.com/ppy/osu/tree/master/osu.Game/Rulesets/Objects/Types
         public override bool CanConvert() => true;
 
-        protected override IEnumerable<EmptyFreeformHitObject> ConvertHitObject(HitObject original, IBeatmap beatmap, CancellationToken cancellationToken)
+        protected override IEnumerable<ModLoaderHitObject> ConvertHitObject(HitObject original, IBeatmap beatmap, CancellationToken cancellationToken)
         {
-            yield return new EmptyFreeformHitObject
+            yield return new ModLoaderHitObject
             {
                 Samples = original.Samples,
                 StartTime = original.StartTime,

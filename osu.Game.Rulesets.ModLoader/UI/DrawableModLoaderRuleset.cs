@@ -7,29 +7,29 @@ using osu.Framework.Input;
 using osu.Game.Beatmaps;
 using osu.Game.Input.Handlers;
 using osu.Game.Replays;
-using osu.Game.Rulesets.EmptyFreeform.Objects;
-using osu.Game.Rulesets.EmptyFreeform.Objects.Drawables;
-using osu.Game.Rulesets.EmptyFreeform.Replays;
+using osu.Game.Rulesets.ModLoader.Objects;
+using osu.Game.Rulesets.ModLoader.Objects.Drawables;
+using osu.Game.Rulesets.ModLoader.Replays;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.UI;
 
-namespace osu.Game.Rulesets.EmptyFreeform.UI
+namespace osu.Game.Rulesets.ModLoader.UI
 {
     [Cached]
-    public partial class DrawableEmptyFreeformRuleset : DrawableRuleset<EmptyFreeformHitObject>
+    public partial class DrawableModLoaderRuleset : DrawableRuleset<ModLoaderHitObject>
     {
-        public DrawableEmptyFreeformRuleset(EmptyFreeformRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null)
+        public DrawableModLoaderRuleset(ModLoaderRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null)
             : base(ruleset, beatmap, mods)
         {
         }
 
-        protected override Playfield CreatePlayfield() => new EmptyFreeformPlayfield();
+        protected override Playfield CreatePlayfield() => new ModLoaderPlayfield();
 
-        protected override ReplayInputHandler CreateReplayInputHandler(Replay replay) => new EmptyFreeformFramedReplayInputHandler(replay);
+        protected override ReplayInputHandler CreateReplayInputHandler(Replay replay) => new ModLoaderFramedReplayInputHandler(replay);
 
-        public override DrawableHitObject<EmptyFreeformHitObject> CreateDrawableRepresentation(EmptyFreeformHitObject h) => new DrawableEmptyFreeformHitObject(h);
+        public override DrawableHitObject<ModLoaderHitObject> CreateDrawableRepresentation(ModLoaderHitObject h) => new DrawableModLoaderHitObject(h);
 
-        protected override PassThroughInputManager CreateInputManager() => new EmptyFreeformInputManager(Ruleset?.RulesetInfo);
+        protected override PassThroughInputManager CreateInputManager() => new ModLoaderInputManager(Ruleset?.RulesetInfo);
     }
 }

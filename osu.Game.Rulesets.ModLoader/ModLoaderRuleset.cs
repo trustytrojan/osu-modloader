@@ -11,47 +11,47 @@ using osu.Framework.Input.Bindings;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Difficulty;
-using osu.Game.Rulesets.EmptyFreeform.Beatmaps;
-using osu.Game.Rulesets.EmptyFreeform.Mods;
-using osu.Game.Rulesets.EmptyFreeform.UI;
+using osu.Game.Rulesets.ModLoader.Beatmaps;
+using osu.Game.Rulesets.ModLoader.Mods;
+using osu.Game.Rulesets.ModLoader.UI;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.UI;
 using osuTK;
 using osuTK.Graphics;
 
-namespace osu.Game.Rulesets.EmptyFreeform
+namespace osu.Game.Rulesets.ModLoader
 {
-    public partial class EmptyFreeformRuleset : Ruleset
+    public partial class ModLoaderRuleset : Ruleset
     {
-        public override string Description => "a very emptyfreeformruleset ruleset";
+        public override string Description => "a very ModLoaderruleset ruleset";
 
         public override DrawableRuleset CreateDrawableRulesetWith(IBeatmap beatmap, IReadOnlyList<Mod> mods = null) =>
-            new DrawableEmptyFreeformRuleset(this, beatmap, mods);
+            new DrawableModLoaderRuleset(this, beatmap, mods);
 
         public override IBeatmapConverter CreateBeatmapConverter(IBeatmap beatmap) =>
-            new EmptyFreeformBeatmapConverter(beatmap, this);
+            new ModLoaderBeatmapConverter(beatmap, this);
 
         public override DifficultyCalculator CreateDifficultyCalculator(IWorkingBeatmap beatmap) =>
-            new EmptyFreeformDifficultyCalculator(RulesetInfo, beatmap);
+            new ModLoaderDifficultyCalculator(RulesetInfo, beatmap);
 
         public override IEnumerable<Mod> GetModsFor(ModType type)
         {
             switch (type)
             {
                 case ModType.Automation:
-                    return new[] { new EmptyFreeformModAutoplay() };
+                    return new[] { new ModLoaderModAutoplay() };
 
                 default:
                     return Array.Empty<Mod>();
             }
         }
 
-        public override string ShortName => "emptyfreeformruleset";
+        public override string ShortName => "ModLoaderruleset";
 
         public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) => new[]
         {
-            new KeyBinding(InputKey.Z, EmptyFreeformAction.Button1),
-            new KeyBinding(InputKey.X, EmptyFreeformAction.Button2),
+            new KeyBinding(InputKey.Z, ModLoaderAction.Button1),
+            new KeyBinding(InputKey.X, ModLoaderAction.Button2),
         };
 
         public override Drawable CreateIcon() => new Icon(ShortName[0]);

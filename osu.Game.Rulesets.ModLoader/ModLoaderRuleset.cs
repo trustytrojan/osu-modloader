@@ -23,7 +23,7 @@ namespace osu.Game.Rulesets.ModLoader
 {
     public partial class ModLoaderRuleset : Ruleset
     {
-        public override string Description => "a very ModLoaderruleset ruleset";
+        public override string Description => "ModLoader";
 
         public override DrawableRuleset CreateDrawableRulesetWith(IBeatmap beatmap, IReadOnlyList<Mod> mods = null) =>
             new DrawableModLoaderRuleset(this, beatmap, mods);
@@ -46,7 +46,7 @@ namespace osu.Game.Rulesets.ModLoader
             }
         }
 
-        public override string ShortName => "ModLoaderruleset";
+        public override string ShortName => "ModLoader";
 
         public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) => new[]
         {

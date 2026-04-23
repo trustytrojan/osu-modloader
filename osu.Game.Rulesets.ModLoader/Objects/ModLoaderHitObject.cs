@@ -3,24 +3,23 @@ using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Types;
 using osuTK;
 
-namespace osu.Game.Rulesets.ModLoader.Objects
+namespace osu.Game.Rulesets.ModLoader.Objects;
+
+public class ModLoaderHitObject : HitObject, IHasPosition
 {
-    public class ModLoaderHitObject : HitObject, IHasPosition
-    {
-        public override Judgement CreateJudgement() => new Judgement();
+	public override Judgement CreateJudgement() => new();
 
-        public Vector2 Position { get; set; }
+	public Vector2 Position { get; set; }
 
-        public float X
-        {
-            get => Position.X;
-            set => Position = new Vector2(value, Y);
-        }
+	public float X
+	{
+		get => Position.X;
+		set => Position = new Vector2(value, Y);
+	}
 
-        public float Y
-        {
-            get => Position.Y;
-            set => Position = new Vector2(X, value);
-        }
-    }
+	public float Y
+	{
+		get => Position.Y;
+		set => Position = new Vector2(X, value);
+	}
 }

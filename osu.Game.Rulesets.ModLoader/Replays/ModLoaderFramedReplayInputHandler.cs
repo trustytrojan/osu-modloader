@@ -1,33 +1,29 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using osu.Framework.Input.StateChanges;
 using osu.Framework.Utils;
 using osu.Game.Replays;
 using osu.Game.Rulesets.Replays;
 
-namespace osu.Game.Rulesets.ModLoader.Replays
+namespace osu.Game.Rulesets.ModLoader.Replays;
+
+public class ModLoaderFramedReplayInputHandler(Replay replay) : FramedReplayInputHandler<ModLoaderReplayFrame>(replay)
 {
-    public class ModLoaderFramedReplayInputHandler : FramedReplayInputHandler<ModLoaderReplayFrame>
-    {
-        public ModLoaderFramedReplayInputHandler(Replay replay)
-            : base(replay)
-        {
-        }
+	protected override bool IsImportant(ModLoaderReplayFrame frame) => frame.Actions.Count != 0;
 
-        protected override bool IsImportant(ModLoaderReplayFrame frame) => frame.Actions.Any();
+	protected override void CollectReplayInputs(List<IInput> inputs)
+	{
+		var position = Interpolation.ValueAt(CurrentTime, StartFrame.Position, EndFrame.Position, StartFrame.Time, EndFrame.Time);
 
-        protected override void CollectReplayInputs(List<IInput> inputs)
-        {
-            var position = Interpolation.ValueAt(CurrentTime, StartFrame.Position, EndFrame.Position, StartFrame.Time, EndFrame.Time);
-
-            inputs.Add(new MousePositionAbsoluteInput
-            {
-                Position = GamefieldToScreenSpace(position),
-            });
-            inputs.Add(new ReplayState<ModLoaderAction>
-            {
-                PressedActions = CurrentFrame?.Actions ?? new List<ModLoaderAction>(),
-            });
-        }
-    }
+		inputs.AddRange(
+		[
+			new MousePositionAbsoluteInput
+			{
+				Position = GamefieldToScreenSpace(position),
+			},
+			new ReplayState<ModLoaderAction>
+			{
+				PressedActions = CurrentFrame?.Actions ?? [],
+			}
+		]);
+	}
 }

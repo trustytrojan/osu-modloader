@@ -1,0 +1,66 @@
+[*.cs]
+# Basics
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# IDE0005: Remove unnecessary usings (imports at top of files)
+dotnet_diagnostic.IDE0005.severity = warning
+
+# Private members: camelCase without underscore
+dotnet_naming_style.simple_camel.capitalization = camel_case
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_rule.private_fields_style.symbols = private_fields
+dotnet_naming_rule.private_fields_style.style = simple_camel
+dotnet_naming_rule.private_fields_style.severity = warning
+
+# IDE0161: File-scoped namespaces (reduces indentation)
+csharp_style_namespace_declarations = file_scoped:warning
+
+# IDE0300: Collection expressions (use [] instead of new List<T> or new[])
+dotnet_style_prefer_collection_expression = when_types_loosely_match:warning
+dotnet_style_collection_initializer = true:warning
+
+# IDE0066: Switch expressions (cleaner return/assignment logic)
+csharp_style_prefer_switch_expression = true:warning
+
+# IDE0290: Primary Constructors (C# 12 - parameter in class header)
+csharp_style_prefer_primary_constructors = true:warning
+
+# IDE0090: Target-typed 'new' (use 'List<string> x = new();')
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
+
+# IDE0078: Modern pattern matching (use 'is' and 'or' logic)
+csharp_style_prefer_pattern_matching = true:warning
+
+# IDE0063: Prefer `using var` when applicable
+csharp_prefer_simple_using_statement = true:warning
+
+# IDE0017: Use object initializer blocks
+dotnet_style_object_initializer = true:warning
+
+# IDE0031: Enforce null-propagation (x?.y)
+dotnet_style_null_propagation = true:warning
+
+# IDE0034: Enforce '??' for null checks
+dotnet_style_coalesce_expression = true:warning
+
+# IDE0080: Enforce 'is not' pattern matching
+csharp_style_prefer_not_pattern = true:warning
+
+# Use fat arrows for one-liners to save vertical space
+csharp_style_expression_bodied_methods = when_on_single_line:warning
+csharp_style_expression_bodied_properties = true:warning
+csharp_style_expression_bodied_accessors = true:warning
+csharp_style_expression_bodied_constructors = when_on_single_line:warning
+
+# Keep using statements tidy and sorted
+dotnet_separate_import_directive_groups = false
+dotnet_sort_system_usings_first = true
+
+# IDE0007: Use 'var' instead of explicit type
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:warning

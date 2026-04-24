@@ -50,12 +50,6 @@ dotnet_style_coalesce_expression = true:warning
 # IDE0080: Enforce 'is not' pattern matching
 csharp_style_prefer_not_pattern = true:warning
 
-# Use fat arrows for one-liners to save vertical space
-csharp_style_expression_bodied_methods = when_on_single_line:warning
-csharp_style_expression_bodied_properties = true:warning
-csharp_style_expression_bodied_accessors = true:warning
-csharp_style_expression_bodied_constructors = when_on_single_line:warning
-
 # Keep using statements tidy and sorted
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_usings_first = true

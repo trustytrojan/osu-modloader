@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Reflection;
+using HarmonyLib;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
+using osu.Framework.Logging;
+using osu.Framework.Platform;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Difficulty;
@@ -70,4 +73,79 @@ public partial class ModLoaderRuleset : Ruleset
 
 	// Leave this line intact. It will bake the correct version into the ruleset on each build/release.
 	public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+
+	static readonly Harmony harmony = new("ModLoader");
+
+	// The ruleset's constructor is the earliest point in the game's lifecycle where we can run.
+	// According to 2026.408.0 source, we are inside the stack frame of OsuGameBase.LoadComplete.
+	// We want mods to (optionally) provide Drawables to attach to the game. Postfix OsuGameBase.LoadComplete to do so.
+	public ModLoaderRuleset()
+	{
+		harmony.PatchCategory("ModLoaderStartup");
+	}
+
+	[HarmonyPatch(typeof(OsuGameBase), "LoadComplete")]
+	[HarmonyPatchCategory("ModLoaderStartup")]
+	static class OsuGameBase_load_Patch
+	{
+		static bool loaded = false;
+
+		static void Postfix(OsuGameBase __instance)
+		{
+			if (loaded)
+				return;
+			loaded = true;
+			harmony.UnpatchCategory("ModLoaderStartup");
+
+			var game = __instance;
+			log($"Retrieved game: {game}#{game.GetHashCode()}");
+
+			if (AccessTools.Property(typeof(OsuGameBase), "Storage").GetValue(game) is not Storage gameStorage)
+				throw new InvalidOperationException("OsuGameBase.Storage is null");
+
+			IEnumerable<string> modDlls;
+			try
+			{
+				modDlls = gameStorage.GetFiles(@"mods", @"*.dll");
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"Failed to open mods folder: {ex}");
+				return;
+			}
+
+			log("Got mod DLL paths, starting mod loading");
+
+			foreach (var modDllRelative in modDlls)
+			{
+				var modDll = gameStorage.GetFullPath(modDllRelative);
+				log($"modDll='{modDll}'");
+
+				var modName = Path.GetFileNameWithoutExtension(modDll);
+				log($"modName='{modName}'");
+
+				var entrypointType = Assembly.LoadFrom(modDll).GetType($"{modName}.Entrypoint");
+				if (entrypointType == null)
+				{
+					log($"Type '{modName}.Entrypoint' does not exist, skipping");
+					continue;
+				}
+
+				var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+				var method = entrypointType.GetMethods(flags).FirstOrDefault();
+
+				if (method?.Invoke(null, null) is Drawable drawable)
+				{
+					game.Add(drawable);
+					log($"Drawable {drawable}#{drawable.GetHashCode()} added to game");
+				}
+				else
+					log("Null returned from entrypoint, side effects assumed");
+			}
+
+			log("Finished loading mods");
+
+			static void log(string message) => Logger.Log($"ModLoader: {message}");
+		}
+	}
 }

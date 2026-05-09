@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.IO;
+using System;
 using HarmonyLib;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -74,7 +76,32 @@ public partial class ModLoaderRuleset : Ruleset
 	// Leave this line intact. It will bake the correct version into the ruleset on each build/release.
 	public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
 
-	static readonly Harmony harmony = new("ModLoader");
+	static readonly Harmony harmony;
+
+	static ModLoaderRuleset()
+	{
+		AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+		{
+			if (args == null || args.Name == null)
+				return null;
+
+			if (!args.Name.StartsWith("0Harmony", StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			try
+			{
+				// Return the ModLoader assembly itself so requests for 0Harmony
+				// are satisfied by the merged assembly (no separate 0Harmony.dll needed).
+				return typeof(ModLoaderRuleset).Assembly;
+			}
+			catch
+			{
+				return null;
+			}
+		};
+
+		harmony = new Harmony("ModLoader");
+	}
 
 	// The ruleset's constructor is the earliest point in the game's lifecycle where we can run.
 	// According to 2026.408.0 source, we are inside the stack frame of OsuGameBase.LoadComplete.

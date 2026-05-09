@@ -2,14 +2,14 @@
 set -e
 OSU_PATH=~/.local/share/osu
 
-# Build the ruleset
+# Build the ruleset & test mods
 dotnet build -c Release
 
-# Clean up data directory, copy ruleset
+# Clean up data directory, copy ruleset & mods
 rm $OSU_PATH/{logs/*,rulesets/*,mods/*} || true
 cp osu.Game.Rulesets.ModLoader/bin/Release/net8.0/osu.Game.Rulesets.ModLoader.dll $OSU_PATH/rulesets/
 mkdir -p $OSU_PATH/mods/
-cp TestMod/bin/Release/net8.0/TestMod.dll $OSU_PATH/mods/
+cp TestMod*/bin/Release/net8.0/TestMod*.dll $OSU_PATH/mods/
 
 # Run game, follow runtime log
 {

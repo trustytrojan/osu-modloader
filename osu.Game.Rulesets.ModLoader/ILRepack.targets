@@ -7,7 +7,6 @@
     </ItemGroup>
 
     <ILRepack Parallel="true"
-              Internalize="true"
               InputAssemblies="@(InputAssemblies)"
               TargetKind="SameAsPrimaryAssembly" 
               OutputFile="$(OutputPath)$(TargetName).dll"

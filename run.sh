@@ -12,6 +12,7 @@ mkdir -p $OSU_PATH/mods/
 cp TestMod*/bin/Release/net8.0/TestMod*.dll $OSU_PATH/mods/
 cp ReplayEncoder/bin/Release/net8.0/ReplayEncoder.dll $OSU_PATH/mods/
 cp SkipLoadingScreen/bin/Release/net8.0/SkipLoadingScreen.dll $OSU_PATH/mods/
+cp UnlockMainMenuBackgrounds/bin/Release/net8.0/UnlockMainMenuBackgrounds.dll $OSU_PATH/mods/
 
 # Run game, follow runtime log
 {

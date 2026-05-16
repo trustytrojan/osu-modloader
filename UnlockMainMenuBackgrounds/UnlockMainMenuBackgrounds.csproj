@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ppy.osu.Game" Version="2026.408.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+  </ItemGroup>
+</Project>

@@ -11,6 +11,7 @@ cp osu.Game.Rulesets.ModLoader/bin/Release/net8.0/osu.Game.Rulesets.ModLoader.dl
 mkdir -p $OSU_PATH/mods/
 cp TestMod*/bin/Release/net8.0/TestMod*.dll $OSU_PATH/mods/
 cp ReplayEncoder/bin/Release/net8.0/ReplayEncoder.dll $OSU_PATH/mods/
+cp SkipLoadingScreen/bin/Release/net8.0/SkipLoadingScreen.dll $OSU_PATH/mods/
 
 # Run game, follow runtime log
 {

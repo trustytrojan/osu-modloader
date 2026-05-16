@@ -10,6 +10,7 @@ rm $OSU_PATH/{logs/*,rulesets/*,mods/*} || true
 cp osu.Game.Rulesets.ModLoader/bin/Release/net8.0/osu.Game.Rulesets.ModLoader.dll $OSU_PATH/rulesets/
 mkdir -p $OSU_PATH/mods/
 cp TestMod*/bin/Release/net8.0/TestMod*.dll $OSU_PATH/mods/
+cp ReplayEncoder/bin/Release/net8.0/ReplayEncoder.dll $OSU_PATH/mods/
 
 # Run game, follow runtime log
 {

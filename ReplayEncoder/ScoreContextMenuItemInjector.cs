@@ -1,0 +1,179 @@
+using HarmonyLib;
+using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Logging;
+using osu.Framework.Screens;
+using osu.Game.Graphics.UserInterface;
+using osu.Game.Localisation;
+using osu.Game.Overlays.Toolbar;
+using osu.Game.Scoring;
+using osu.Game.Screens;
+using osu.Game.Screens.Play;
+using osu.Game.Screens.Ranking;
+using osu.Game.Screens.Select;
+
+namespace ReplayEncoder;
+
+[HarmonyPatch(typeof(BeatmapLeaderboardScore), "osu.Framework.Graphics.Cursor.IHasContextMenu.get_ContextMenuItems")]
+[HarmonyPatchCategory("StartupPatches")]
+static class ContextMenuItemsPatch
+{
+	public static void Postfix(ref MenuItem[] __result, BeatmapLeaderboardScore __instance)
+	{
+		// Only add if score has files (same condition as original)  
+		if (__instance.Score.Files.Count <= 0)
+			return;
+
+		if (__result.Any(item => item.Text.Value == "Render to video"))
+			return;
+
+		var items = __result.ToList();
+
+		// Find where to insert - after Export but before Delete, or at the end  
+		var insertIndex = items.FindIndex(item => item.Text.Value == SongSelectStrings.WatchReplay);
+
+		if (insertIndex >= 0)
+			insertIndex++;
+		else
+			insertIndex = items.Count;
+
+		items.Insert(insertIndex, new OsuMenuItem("Render to video", MenuItemType.Standard, () => HandleClick(__instance.Score)));
+
+		__result = [.. items];
+	}
+
+	static void HandleClick(ScoreInfo score)
+	{
+		ReplayEncoder.Instance.PrepareRecord();
+		if (!ReplayEncoder.Instance.CanRecord())
+			return;
+		ReplayEncoder.Harmony.PatchCategory("RecordingTrigger");
+		ReplayEncoder.Instance.Game.PresentScore(score, ScorePresentType.Gameplay);
+	}
+}
+
+[HarmonyPatch(typeof(ReplayPlayerLoader), nameof(ReplayPlayerLoader.OnEntering))]
+[HarmonyPatchCategory("RecordingTrigger")]
+static class ReplayPlayerLoader_OnEntering_Patch
+{
+	static void Postfix(ReplayPlayerLoader __instance)
+	{
+		Logger.Log($"ReplayPlayerLoader_OnEntering_Patch: caught ReplayPlayerLoader#{__instance.GetHashCode()}");
+		ReplayEncoder.Harmony.UnpatchCategory("RecordingTrigger");
+		ReplayEncoder.Instance.ReceiveReplayPlayerLoader(__instance);
+	}
+}
+
+#region Exit handlers
+
+[HarmonyPatch(typeof(PlayerLoader), nameof(PlayerLoader.OnSuspending))]
+[HarmonyPatchCategory("WhileRecording")]
+static class PlayerLoader_OnSuspending_Patch
+{
+	static void Postfix(PlayerLoader __instance, ScreenTransitionEvent e)
+	{
+		if (__instance is ReplayPlayerLoader && e.Next is not ReplayPlayer)
+		{
+			Logger.Log($"PlayerLoader_OnSuspending_Patch: caught {__instance}#{__instance.GetHashCode()} transitioning to {e.Next}#{e.Next.GetHashCode()} which is not a ReplayPlayer. Stopping recording.");
+			ReplayEncoder.Instance.StopRecording();
+		}
+	}
+}
+
+[HarmonyPatch(typeof(PlayerLoader), nameof(PlayerLoader.OnExiting))]
+[HarmonyPatchCategory("WhileRecording")]
+static class PlayerLoader_OnExiting_Patch
+{
+	static void Prefix(PlayerLoader __instance, ScreenExitEvent e)
+	{
+		if (__instance is ReplayPlayerLoader && e.Destination is not ReplayPlayer)
+		{
+			Logger.Log($"PlayerLoader_OnExiting_Patch: caught {__instance}#{__instance.GetHashCode()} exiting to {e.Destination}#{e.Destination.GetHashCode()} which is not a ReplayPlayer. Stopping recording.");
+			ReplayEncoder.Instance.StopRecording();
+		}
+	}
+}
+
+[HarmonyPatch(typeof(ReplayPlayer), nameof(ReplayPlayer.OnSuspending))]
+[HarmonyPatchCategory("WhileRecording")]
+static class ReplayPlayer_OnSuspending_Patch
+{
+	static void Prefix(ReplayPlayer __instance, ScreenTransitionEvent e)
+	{
+		if (!__instance.HasCompleted() || e.Next is not ResultsScreen)
+		{
+			if (!__instance.HasCompleted())
+				Logger.Log($"ReplayPlayer_OnSuspending_Patch: caught incomplete {__instance}#{__instance.GetHashCode()} suspending. Stopping recording.");
+			else if (e.Next is not ResultsScreen)
+				Logger.Log($"ReplayPlayer_OnSuspending_Patch: caught {__instance}#{__instance.GetHashCode()} transitioning to {e.Next}#{e.Next.GetHashCode()} which is not a ResultsScreen. Stopping recording.");
+			ReplayEncoder.Instance.StopRecording();
+		}
+	}
+}
+
+[HarmonyPatch(typeof(ReplayPlayer), nameof(ReplayPlayer.OnExiting))]
+[HarmonyPatchCategory("WhileRecording")]
+static class ReplayPlayer_OnExiting_Patch
+{
+	static void Prefix(ReplayPlayer __instance, ScreenExitEvent e)
+	{
+		if (!__instance.HasCompleted() || e.Destination is not ResultsScreen)
+		{
+			if (!__instance.HasCompleted())
+				Logger.Log($"ReplayPlayer_OnExiting_Patch: caught incomplete {__instance}#{__instance.GetHashCode()} exiting. Stopping recording.");
+			else if (e.Next is not ResultsScreen)
+				Logger.Log($"ReplayPlayer_OnExiting_Patch: caught {__instance}#{__instance.GetHashCode()} exiting to {e.Destination}#{e.Destination.GetHashCode()} which is not a ResultsScreen. Stopping recording.");
+			ReplayEncoder.Instance.StopRecording();
+		}
+	}
+}
+
+#endregion
+
+// Stop recording 4 simulated seconds after showing the advanced statistics of the score in the results screen.
+[HarmonyPatch(typeof(ResultsScreen), nameof(ResultsScreen.OnEntering))]
+[HarmonyPatchCategory("WhileRecording")]
+static class ResultsScreen_OnEntering_Patch
+{
+	// Use a postfix, because all that needs to happen before we run is `base.OnEntering()`.
+	static void Postfix(ResultsScreen __instance)
+	{
+		if (__instance is not SoloResultsScreen srs)
+			return;
+
+		if (!ReplayEncoder.Instance.Recording)
+			return;
+
+		if (srs.Score == null)
+		{
+			Logger.Log("wtf?", level: LogLevel.Error);
+			return;
+		}
+
+		var scorePanelList = AccessTools.Property(typeof(ResultsScreen), "ScorePanelList").GetValue(srs) as ScorePanelList;
+		var panel = scorePanelList.GetPanelForScore(srs.Score);
+
+		// one-time event handler
+		void callback(PanelState panelState)
+		{
+			if (panelState == PanelState.Expanded)
+				panel.TriggerClick();
+			ReplayEncoder.Instance.CaptureInvokeActionIn(ReplayEncoder.Instance.StopRecording, 4_000);
+			panel.StateChanged -= callback;
+		}
+		panel.StateChanged += callback;
+	}
+}
+
+// Maybe postfix SoloResultsScreen.OnExiting to call MusicController.Play?
+
+// Prevent the toolbar from being shown while recording.
+[HarmonyPatch(typeof(VisibilityContainer), nameof(VisibilityContainer.ToggleVisibility))]
+[HarmonyPatchCategory("WhileRecording")]
+static class VisibilityContainer_ToggleVisibility_Patch
+{
+	static bool Prefix(VisibilityContainer __instance) =>
+		// true lets the original method run, false does not.
+		// let the original method run if __instance is not a Toolbar.
+		__instance is not Toolbar;
+}

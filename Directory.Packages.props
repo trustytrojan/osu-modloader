@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Include="ppy.osu.Game" Version="2026.916.0" />
+    <PackageVersion Include="Lib.Harmony" Version="2.4.2" />
+    <PackageVersion Include="ILRepack.Lib.MSBuild.Task" Version="2.0.44.2" />
+  </ItemGroup>
+</Project>

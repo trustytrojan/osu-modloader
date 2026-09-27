@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.IO;
-using System;
 using HarmonyLib;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;

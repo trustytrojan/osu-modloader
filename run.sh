@@ -7,12 +7,12 @@ dotnet build -c Release
 
 # Clean up data directory, copy ruleset & mods
 rm $OSU_PATH/{logs/*,rulesets/*,mods/*} || true
-cp osu.Game.Rulesets.ModLoader/bin/Release/net8.0/osu.Game.Rulesets.ModLoader.dll $OSU_PATH/rulesets/
+cp osu.Game.Rulesets.ModLoader/bin/Release/net10.0/osu.Game.Rulesets.ModLoader.dll $OSU_PATH/rulesets/
 mkdir -p $OSU_PATH/mods/
-cp TestMod*/bin/Release/net8.0/TestMod*.dll $OSU_PATH/mods/
-cp ReplayEncoder/bin/Release/net8.0/ReplayEncoder.dll $OSU_PATH/mods/
-cp SkipLoadingScreen/bin/Release/net8.0/SkipLoadingScreen.dll $OSU_PATH/mods/
-cp UnlockMainMenuBackgrounds/bin/Release/net8.0/UnlockMainMenuBackgrounds.dll $OSU_PATH/mods/
+cp TestMod*/bin/Release/net10.0/TestMod*.dll $OSU_PATH/mods/
+cp ReplayEncoder/bin/Release/net10.0/ReplayEncoder.dll $OSU_PATH/mods/
+cp SkipLoadingScreen/bin/Release/net10.0/SkipLoadingScreen.dll $OSU_PATH/mods/
+cp UnlockMainMenuBackgrounds/bin/Release/net10.0/UnlockMainMenuBackgrounds.dll $OSU_PATH/mods/
 
 # Run game, follow runtime log
 {
@@ -20,5 +20,6 @@ cp UnlockMainMenuBackgrounds/bin/Release/net8.0/UnlockMainMenuBackgrounds.dll $O
 	tail -f $OSU_PATH/logs/*.runtime.log & echo $! >/tmp/tail_pid
 } &
 trap 'kill "$(</tmp/tail_pid)"' SIGINT
-osu-lazer
+# osu-lazer
+SDL_VIDEODRIVER=wayland NIXPKGS_ALLOW_UNFREE=1 nix run nixpkgs#osu-lazer --impure
 wait

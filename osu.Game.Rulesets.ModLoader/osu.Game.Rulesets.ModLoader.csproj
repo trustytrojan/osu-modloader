@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Project">
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyTitle>osu.Game.Rulesets.ModLoader</AssemblyTitle>
     <OutputType>Library</OutputType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -15,16 +15,17 @@
 
   <ItemGroup>
     <!-- ILRepack can embed Harmony into our DLL. -->
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.44.2">
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
-    <PackageReference Include="Lib.Harmony" Version="2.4.2">
-      <ExcludeAssets>runtime</ExcludeAssets> <PrivateAssets>all</PrivateAssets>
+    <PackageReference Include="Lib.Harmony">
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
-    <PackageReference Include="ppy.osu.Game" Version="2026.408.0" />
+    <PackageReference Include="ppy.osu.Game" />
   </ItemGroup>
 
   <!-- Let ILRepack see Harmony's DLL so it can merge with ours. -->
@@ -33,6 +34,4 @@
       <ReferenceCopyLocalPaths Include="@(ReferencePath)" Condition="'%(Filename)' == '0Harmony'" />
     </ItemGroup>
   </Target>
-
-  <Import Project="ILRepack.targets" />
 </Project>

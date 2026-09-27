@@ -26,7 +26,7 @@ public partial class ScreenStackScreenshotter : Drawable, IBufferedDrawable
 	public Action? OnExtractBegin = null, OnExtractEnd = null;
 	public Action<Image<Rgba32>?>? OnImageReceived = null;
 
-	private readonly BufferedDrawNodeSharedData sharedData = new([RenderBufferFormat.D16], pixelSnapping: true, clipToRootNode: true);
+	private readonly BufferedDrawNodeSharedData sharedData = new(TexturePixelFormat.R8G8B8A8Float, pixelSnapping: true, clipToRootNode: true);
 	private IShader textureShader = null!;
 
 	private bool captureRequested;

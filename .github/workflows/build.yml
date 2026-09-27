@@ -22,4 +22,10 @@ jobs:
         with:
           name: osu-modloader-with-mods
           if-no-files-found: error
-          path: '*/bin/Release/net10.0/*.dll'
+          path: |
+            osu.Game.Rulesets.ModLoader/bin/Release/net10.0/osu.Game.Rulesets.ModLoader.dll
+            ReplayEncoder/bin/Release/net10.0/ReplayEncoder.dll
+            SkipLoadingScreen/bin/Release/net10.0/SkipLoadingScreen.dll
+            TestMod/bin/Release/net10.0/TestMod.dll
+            TestModWithDrawable/bin/Release/net10.0/TestModWithDrawable.dll
+            UnlockMainMenuBackgrounds/bin/Release/net10.0/UnlockMainMenuBackgrounds.dll

@@ -111,7 +111,7 @@ public partial class ModLoaderRuleset : Ruleset
 
 	[HarmonyPatch(typeof(OsuGameBase), "LoadComplete")]
 	[HarmonyPatchCategory("ModLoaderStartup")]
-	static class OsuGameBase_load_Patch
+	static class OsuGameBase_LoadComplete_Patch
 	{
 		static bool loaded = false;
 
@@ -128,17 +128,7 @@ public partial class ModLoaderRuleset : Ruleset
 			if (AccessTools.Property(typeof(OsuGameBase), "Storage").GetValue(game) is not Storage gameStorage)
 				throw new InvalidOperationException("OsuGameBase.Storage is null");
 
-			IEnumerable<string> modDlls;
-			try
-			{
-				modDlls = gameStorage.GetFiles(@"mods", @"*.dll");
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"Failed to open mods folder: {ex}");
-				return;
-			}
-
+			var modDlls = gameStorage.GetFiles(@"mods", @"*.dll");
 			log("Got mod DLL paths, starting mod loading");
 
 			foreach (var modDllRelative in modDlls)

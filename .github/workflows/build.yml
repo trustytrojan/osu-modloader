@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: osu-modloader-with-mods
+          if-no-files-found: error
+          path: |
+            osu.Game.Rulesets.ModLoader/bin/Release/net10.0/osu.Game.Rulesets.ModLoader.dll
+            ReplayEncoder/bin/Release/net10.0/ReplayEncoder.dll
+            SkipLoadingScreen/bin/Release/net10.0/SkipLoadingScreen.dll
+            TestMod/bin/Release/net10.0/TestMod.dll
+            TestModWithDrawable/bin/Release/net10.0/TestModWithDrawable.dll
+            UnlockMainMenuBackgrounds/bin/Release/net10.0/UnlockMainMenuBackgrounds.dll

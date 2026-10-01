@@ -10,6 +10,14 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace ReplayEncoder;
 
+// (2026.916.0) We WANT samples to be unmuted at all times for recording.
+[HarmonyPatch(typeof(Player), "updateSampleDisabledState")]
+[HarmonyPatchCategory("WhileRecording")]
+static class Player_updateSampleDisabledState_Patch
+{
+	static bool Prefix() => false;
+}
+
 // Just to avoid the log spam.
 [HarmonyPatch(typeof(GameplayClockContainer), "StartGameplayClock")]
 [HarmonyPatchCategory("WhileRecording")]

@@ -33,7 +33,12 @@ public sealed class FFmpegCliProcess : IDisposable
 		var extraArgs = "";
 
 		// Try to use hardware acceleration codecs
-		if (TestH264Nvenc())
+		if (TestH264V4l2m2m())
+		{
+			videoCodec = "h264_v4l2m2m";
+			extraArgs += "-pix_fmt nv12";
+		}
+		else if (TestH264Nvenc())
 		{
 			videoCodec = "h264_nvenc";
 		}
@@ -182,7 +187,7 @@ public sealed class FFmpegCliProcess : IDisposable
 		return process.ExitCode == 0;
 	}
 
-	private string toNamedPipePath(string pipeName)
+	private static string toNamedPipePath(string pipeName)
 	{
 		if (OperatingSystem.IsWindows())
 			return $@"\\.\pipe\{pipeName}";
@@ -196,8 +201,8 @@ public sealed class FFmpegCliProcess : IDisposable
 	}
 
 	public static bool TestH264Qsv() => TestFfmpegArguments("-v warning -f lavfi -i testsrc=1280x720:d=1 -c:v h264_qsv -f null -");
-
 	public static bool TestH264Nvenc() => TestFfmpegArguments("-v warning -f lavfi -i testsrc=1280x720:d=1 -c:v h264_nvenc -f null -");
+	public static bool TestH264V4l2m2m() => TestFfmpegArguments("-v warning -f lavfi -i testsrc=1280x720:d=1 -pix_fmt nv12 -c:v h264_v4l2m2m -f null -");
 
 	public static string DetectVaapiDevice()
 	{

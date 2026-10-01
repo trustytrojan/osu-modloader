@@ -411,6 +411,11 @@ public partial class ReplayEncoder : CompositeDrawable
 				playerClock?.Seek(replayTime);
 				// We keep the clock stopped as to not take unpredictable images of the screen.
 
+				// New osu! update (2026.916.0) causes seeks to mute all audio until "time catches up".
+				// We need to manually keep the track playing because of this.
+				// Samples are handled in HarmonyPatches.
+				player.Beatmap.Value.Track.Start();
+
 				// Increment now before we forget.
 				replayTime += CalcFrameTime();
 			}

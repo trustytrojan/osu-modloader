@@ -20,6 +20,6 @@ cp UnlockMainMenuBackgrounds/bin/Release/net10.0/UnlockMainMenuBackgrounds.dll $
 	tail -f $OSU_PATH/logs/*.runtime.log & echo $! >/tmp/tail_pid
 } &
 trap 'kill "$(</tmp/tail_pid)"' SIGINT
-# osu-lazer
-SDL_VIDEODRIVER=wayland NIXPKGS_ALLOW_UNFREE=1 nix run nixpkgs#osu-lazer --impure
+# osu-lazer # Arch Linux
+osu! # NixOS
 wait
